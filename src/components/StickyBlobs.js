@@ -17,10 +17,10 @@ export default function StickyBlobs() {
   // ✅ 반응형 적용 (가로가 400px 이하일 때 크기 조정)
   const isMobile = windowWidth <= 400;
 
-  // ✅ A4 박스 크기 (PC는 기존 크기 유지, 모바일만 훨씬 크게!)
-  const boxWidth = isMobile ? 80 * windowWidth / 100 : 40 * windowWidth / 100;
+  // ✅ A4 박스 크기 (PC는 기존 유지, 모바일도 그대로)
+  const boxWidth = isMobile ? 70 * windowWidth / 100 : 30 * windowWidth / 100;
   const boxHeight = boxWidth * 1.41; // ✅ A4 비율 유지 (1:1.41)
-  const padding = 10;
+  const padding = 5; // 🔥 패딩 줄여서 이미지 더 크게!
 
   // ✅ A4 박스 중앙 정렬
   const [boxPos, setBoxPos] = useState({
@@ -35,11 +35,11 @@ export default function StickyBlobs() {
     id,
     x: Math.random() * (window.innerWidth - 200) + 100,
     y: Math.random() * (window.innerHeight - 200) + 100,
-    r: isMobile ? Math.random() * 40 + 40 : Math.random() * 100 + 100, // ✅ 모바일에서는 원형 크기 증가 (40~80px)
+    r: isMobile ? Math.random() * 60 + 60 : Math.random() * 100 + 100, // ✅ 모바일에서는 원형 크기 증가 (60~120px)
     directionX: Math.random() * 2 - 1,
     directionY: Math.random() * 2 - 1,
-    speedX: Math.random() * 0.1 + 0.05, // ✅ 이동 속도 그대로 유지
-    speedY: Math.random() * 0.1 + 0.05, // ✅ 이동 속도 그대로 유지
+    speedX: isMobile ? Math.random() * 0.2 + 0.1 : Math.random() * 0.1 + 0.05, // ✅ 모바일에서는 2배 빠르게!
+    speedY: isMobile ? Math.random() * 0.2 + 0.1 : Math.random() * 0.1 + 0.05, // ✅ 모바일에서는 2배 빠르게!
   });
 
   const initialBlobs = Array.from({ length: 8 }, (_, i) => generateBlob(i + 1));
