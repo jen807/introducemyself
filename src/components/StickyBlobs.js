@@ -2,33 +2,48 @@ import { useEffect, useState } from "react";
 import introduceImage from "../imgs/introduce.jpeg"; // ✅ 이미지 import
 
 export default function StickyBlobs() {
-  const generateBlob = (id) => ({
-    id,
-    x: Math.random() * (window.innerWidth - 200) + 100,
-    y: Math.random() * (window.innerHeight - 200) + 100,
-    r: Math.random() * 100 + 100,
-    directionX: Math.random() * 2 - 1,
-    directionY: Math.random() * 2 - 1,
-    speedX: Math.random() * 0.1 + 0.05,
-    speedY: Math.random() * 0.1 + 0.05,
-  });
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const initialBlobs = Array.from({ length: 8 }, (_, i) => generateBlob(i + 1));
-  const [blobs, setBlobs] = useState(initialBlobs);
+  // ✅ 반응형 크기 조절 (화면 크기 변경 감지)
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
 
-  // 🟢 A4 박스 크기 (30vw x 42vw)
-  const boxWidth = 30 * window.innerWidth / 100;
-  const boxHeight = 42 * window.innerWidth / 100;
-  const padding = 10; // 🔥 패딩 10px 추가
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  // 🟢 A4 박스를 처음부터 정확히 중앙에 배치
+  // ✅ 반응형 적용 (가로가 400px 이하일 때 크기 조정)
+  const isMobile = windowWidth <= 400;
+
+  // ✅ A4 박스 크기 (PC는 기존 크기 유지, 모바일만 훨씬 크게!)
+  const boxWidth = isMobile ? 80 * windowWidth / 100 : 40 * windowWidth / 100;
+  const boxHeight = boxWidth * 1.41; // ✅ A4 비율 유지 (1:1.41)
+  const padding = 10;
+
+  // ✅ A4 박스 중앙 정렬
   const [boxPos, setBoxPos] = useState({
-    x: window.innerWidth / 2 - boxWidth / 2,
+    x: windowWidth / 2 - boxWidth / 2,
     y: window.innerHeight / 2 - boxHeight / 2
   });
 
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const generateBlob = (id) => ({
+    id,
+    x: Math.random() * (window.innerWidth - 200) + 100,
+    y: Math.random() * (window.innerHeight - 200) + 100,
+    r: isMobile ? Math.random() * 40 + 40 : Math.random() * 100 + 100, // ✅ 모바일에서는 원형 크기 증가 (40~80px)
+    directionX: Math.random() * 2 - 1,
+    directionY: Math.random() * 2 - 1,
+    speedX: Math.random() * 0.1 + 0.05, // ✅ 이동 속도 그대로 유지
+    speedY: Math.random() * 0.1 + 0.05, // ✅ 이동 속도 그대로 유지
+  });
+
+  const initialBlobs = Array.from({ length: 8 }, (_, i) => generateBlob(i + 1));
+  const [blobs, setBlobs] = useState(initialBlobs);
 
   useEffect(() => {
     const animate = () => {
@@ -62,7 +77,7 @@ export default function StickyBlobs() {
     };
 
     animate();
-  }, []);
+  }, []); // ✅ 이동 속도 수정 X
 
   // 🟢 마우스 클릭 시 드래그 시작
   const handleMouseDown = (e) => {
